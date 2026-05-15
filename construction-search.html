@@ -14,6 +14,8 @@
   --color-border:rgba(0,0,0,0.1);--color-divider:#e5e3de;
   --color-text:#1a1814;--color-text-muted:#6b6963;--color-text-faint:#b0aea9;
   --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-light:#e8f4f4;
+  --color-success:#437a22;--color-success-bg:#eef5e8;
+  --color-error:#c0392b;--color-error-bg:#fdecea;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow-md:0 4px 16px rgba(0,0,0,0.1);
   --radius-sm:6px;--radius-md:10px;--radius-lg:14px;
 }
@@ -22,53 +24,90 @@
   --color-border:rgba(255,255,255,0.1);--color-divider:#2e2d2b;
   --color-text:#e0ddd8;--color-text-muted:#8a8885;--color-text-faint:#4a4946;
   --color-primary:#4f98a3;--color-primary-hover:#6bb5c0;--color-primary-light:#1a3035;
+  --color-success:#6daa45;--color-success-bg:#1e2e18;
+  --color-error:#e57373;--color-error-bg:#3d1515;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.3);--shadow-md:0 4px 16px rgba(0,0,0,0.4);
 }
 html{font-family:'Noto Sans KR',sans-serif;font-size:15px;color:var(--color-text);background:var(--color-bg);min-height:100vh}
 body{display:flex;flex-direction:column;min-height:100vh}
-header{background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+
+/* Header */
+header{background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:var(--color-primary)}
 .header-right{display:flex;align-items:center;gap:10px}
 .badge{font-size:11px;font-weight:600;color:var(--color-text-muted);background:var(--color-surface-2);padding:3px 9px;border-radius:99px;border:1px solid var(--color-border)}
 button.theme-toggle{width:34px;height:34px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);border:1px solid var(--color-border);background:var(--color-surface-2);cursor:pointer;transition:all 150ms}
 button.theme-toggle:hover{color:var(--color-primary);border-color:var(--color-primary)}
-main{flex:1;max-width:1400px;margin:0 auto;width:100%;padding:24px 24px 48px}
 
-/* Loading overlay */
+main{flex:1;max-width:1500px;margin:0 auto;width:100%;padding:20px 24px 48px}
+
+/* Loading */
 #loadingOverlay{position:fixed;inset:0;background:var(--color-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px}
 #loadingOverlay.hidden{display:none}
 .load-bar-wrap{width:280px;height:6px;background:var(--color-border);border-radius:99px;overflow:hidden}
 .load-bar{height:100%;background:var(--color-primary);border-radius:99px;transition:width .3s ease;width:0%}
 .load-msg{font-size:14px;color:var(--color-text-muted)}
 
-.search-panel{background:var(--color-surface);border-radius:var(--radius-lg);border:1px solid var(--color-border);padding:22px;margin-bottom:22px;box-shadow:var(--shadow-sm)}
-.mode-tabs{display:flex;gap:4px;background:var(--color-surface-2);border-radius:var(--radius-md);padding:4px;width:fit-content;margin-bottom:18px}
-.mode-tab{padding:6px 16px;border-radius:calc(var(--radius-md) - 2px);font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--color-text-muted);font-family:inherit;transition:all 150ms}
-.mode-tab.active{background:var(--color-surface);color:var(--color-primary);font-weight:600;box-shadow:var(--shadow-sm)}
-.search-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
-@media(max-width:640px){.search-grid{grid-template-columns:1fr}}
+/* Search panel */
+.search-panel{background:var(--color-surface);border-radius:var(--radius-lg);border:1px solid var(--color-border);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+.panel-title{font-size:11px;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}
+
+/* Company inputs */
+.company-inputs{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.company-row{display:flex;gap:8px;align-items:center}
+.company-row input{flex:1;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text);font-size:14px;font-family:inherit;outline:none;transition:border-color 150ms}
+.company-row input:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-light)}
+.company-row input::placeholder{color:var(--color-text-faint)}
+.company-row .row-label{font-size:11px;font-weight:700;color:var(--color-text-faint);width:20px;text-align:center;flex-shrink:0}
+.btn-add-row,.btn-del-row{width:28px;height:28px;border-radius:var(--radius-sm);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 150ms;line-height:1}
+.btn-add-row:hover{border-color:var(--color-primary);color:var(--color-primary)}
+.btn-del-row:hover{border-color:var(--color-error);color:var(--color-error)}
+
+/* Filter row */
+.filter-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:700px){.filter-row{grid-template-columns:1fr 1fr}}
 .field{display:flex;flex-direction:column;gap:5px}
 .field label{font-size:12px;font-weight:600;color:var(--color-text-muted)}
-.field input,.field select{padding:9px 13px;border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text);font-size:14px;font-family:inherit;outline:none;transition:border-color 150ms}
+.field input,.field select{padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text);font-size:14px;font-family:inherit;outline:none;transition:border-color 150ms}
 .field input:focus,.field select:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-light)}
 .field input::placeholder{color:var(--color-text-faint)}
-.btn-search{padding:9px 22px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-md);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;height:40px;transition:background 150ms}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:48px}
+.input-unit{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--color-text-faint);pointer-events:none;font-weight:500}
+.btn-search{padding:0 22px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-md);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;height:38px;transition:background 150ms;white-space:nowrap}
 .btn-search:hover{background:var(--color-primary-hover)}
-.status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;min-height:26px}
+
+/* Status */
+.status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;min-height:26px;flex-wrap:wrap;gap:8px}
 .result-count{font-size:13px;color:var(--color-text-muted)}
 .result-count strong{color:var(--color-text);font-weight:600}
+.status-right{display:flex;align-items:center;gap:8px}
+
+/* Expected price badge */
+.ep-badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--color-primary-light);color:var(--color-primary)}
+
 .btn-export{padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;background:transparent;border:1px solid var(--color-border);border-radius:var(--radius-sm);color:var(--color-text-muted);cursor:pointer;transition:all 150ms;display:none;align-items:center;gap:5px}
 .btn-export:hover{border-color:var(--color-primary);color:var(--color-primary)}
 .btn-export.visible{display:inline-flex}
+
+/* Results */
 .results-container{background:var(--color-surface);border-radius:var(--radius-lg);border:1px solid var(--color-border);overflow:hidden;box-shadow:var(--shadow-sm)}
-.table-wrap{overflow-x:auto}
+.table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 280px)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead{position:sticky;top:60px;z-index:10;background:var(--color-surface-2)}
-th{padding:9px 13px;text-align:left;font-size:11px;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--color-border);white-space:nowrap}
-td{padding:10px 13px;border-bottom:1px solid var(--color-divider);vertical-align:middle;line-height:1.4}
+thead{position:sticky;top:0;z-index:20;background:var(--color-surface-2);box-shadow:0 1px 0 var(--color-border)}
+th{padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--color-border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--color-divider);vertical-align:middle;line-height:1.4}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--color-surface-2)}
-.col-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+
+/* Company color highlight rows */
+.row-c1 td:first-child{border-left:3px solid #3b82f6}
+.row-c2 td:first-child{border-left:3px solid #f59e0b}
+.row-c3 td:first-child{border-left:3px solid #8b5cf6}
+.row-c4 td:first-child{border-left:3px solid #ec4899}
+.row-c5 td:first-child{border-left:3px solid #10b981}
+
+.col-tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
 .tag-종합건설{background:#dbeafe;color:#1d4ed8}
 .tag-전문건설{background:#dcfce7;color:#15803d}
 .tag-기계설비{background:#fef3c7;color:#b45309}
@@ -81,10 +120,17 @@ tr:hover td{background:var(--color-surface-2)}
 [data-theme="dark"] .tag-소방설비{background:#3d1515;color:#fca5a5}
 [data-theme="dark"] .tag-전기설비{background:#2e1f5e;color:#c4b5fd}
 [data-theme="dark"] .tag-정보통신{background:#0c2d3f;color:#7dd3fc}
+
 .col-amount{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-space:nowrap}
 .col-rank{font-variant-numeric:tabular-nums;text-align:center;color:var(--color-text-muted)}
 .rank-top{color:var(--color-primary);font-weight:700}
 .col-name{font-weight:600}
+
+/* 초과 여부 셀 */
+.exceed-yes{background:var(--color-success-bg)!important;color:var(--color-success);font-weight:700;text-align:center;white-space:nowrap}
+.exceed-no{background:var(--color-error-bg)!important;color:var(--color-error);font-weight:700;text-align:center;white-space:nowrap}
+.exceed-na{color:var(--color-text-faint);text-align:center}
+
 .state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 24px;text-align:center;color:var(--color-text-muted);gap:10px}
 .state-box svg{color:var(--color-text-faint)}
 .state-box p{font-size:14px;max-width:36ch}
@@ -93,17 +139,22 @@ tr:hover td{background:var(--color-surface-2)}
 .inline-loading.active{display:flex}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{width:18px;height:18px;border:2px solid var(--color-border);border-top-color:var(--color-primary);border-radius:50%;animation:spin .7s linear infinite}
+
 .pagination{display:flex;align-items:center;justify-content:center;gap:5px;padding:14px;border-top:1px solid var(--color-divider);flex-wrap:wrap}
 .page-btn{min-width:30px;height:30px;padding:0 7px;border-radius:var(--radius-sm);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-muted);font-size:13px;cursor:pointer;font-family:inherit;transition:all 150ms}
 .page-btn:hover:not(:disabled){border-color:var(--color-primary);color:var(--color-primary)}
 .page-btn.active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
 .page-btn:disabled{opacity:.4;cursor:not-allowed}
 .page-info{font-size:12px;color:var(--color-text-muted);padding:0 6px}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-muted)}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 </style>
 </head>
 <body>
 
-<!-- 초기 로딩 오버레이 -->
 <div id="loadingOverlay">
   <svg width="36" height="36" viewBox="0 0 28 28" fill="none" style="color:#01696f">
     <rect x="2" y="14" width="8" height="12" rx="1.5" fill="currentColor" opacity=".4"/>
@@ -134,52 +185,61 @@ tr:hover td{background:var(--color-surface-2)}
 
 <main>
   <div class="search-panel">
-    <div class="mode-tabs">
-      <button class="mode-tab active" data-mode="company" onclick="setMode('company')">업체명 검색</button>
-      <button class="mode-tab" data-mode="category" onclick="setMode('category')">공종별 검색</button>
-    </div>
-    <div class="search-grid">
-      <div class="field">
-        <label for="inputCompany">업체명</label>
-        <input id="inputCompany" type="text" placeholder="예) 삼성물산, 현대건설..." autocomplete="off">
+    <div class="panel-title">업체 검색</div>
+
+    <!-- 업체명 입력 (다중) -->
+    <div class="company-inputs" id="companyInputs">
+      <div class="company-row" data-idx="0">
+        <span class="row-label">①</span>
+        <input type="text" placeholder="업체명 입력 (부분 검색 가능)" autocomplete="off" onkeydown="handleKey(event)">
+        <button class="btn-add-row" onclick="addRow()" title="업체 추가">＋</button>
       </div>
+    </div>
+
+    <!-- 조건 필터 -->
+    <div class="filter-row">
       <div class="field">
         <label for="inputCategory">공종 선택</label>
         <select id="inputCategory"><option value="">전체 공종</option></select>
       </div>
-      <button class="btn-search" onclick="doSearch()">검색</button>
+      <div class="field">
+        <label for="inputEP">예정가격 (백만원)</label>
+        <div class="input-wrap">
+          <input id="inputEP" type="number" min="0" placeholder="예) 5000" onkeydown="handleKey(event)">
+          <span class="input-unit">백만원</span>
+        </div>
+      </div>
+      <div class="field">
+        <label style="opacity:0">검색</label>
+        <button class="btn-search" onclick="doSearch()">검색</button>
+      </div>
     </div>
   </div>
 
   <div class="status-bar">
     <div class="result-count" id="resultCount"></div>
-    <button class="btn-export" id="btnExport" onclick="exportCSV()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      CSV 내보내기
-    </button>
+    <div class="status-right">
+      <span class="ep-badge" id="epBadge" style="display:none"></span>
+      <button class="btn-export" id="btnExport" onclick="exportCSV()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        CSV 내보내기
+      </button>
+    </div>
   </div>
+
+  <!-- 범례 (2개 이상 업체 검색 시 표시) -->
+  <div class="legend" id="legend" style="display:none"></div>
 
   <div class="results-container" id="resultsContainer">
     <div class="state-box" id="stateBox">
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <p>업체명 또는 공종을 입력하고 검색하세요</p>
-      <small>업체명만 입력하면 모든 공종 결과를 조회합니다</small>
+      <p>업체명을 입력하고 검색하세요</p>
+      <small>여러 업체를 동시에 검색하려면 ＋ 버튼으로 행을 추가하세요</small>
     </div>
     <div class="inline-loading" id="inlineLoading"><div class="spinner"></div> 검색 중...</div>
     <div class="table-wrap" id="tableWrap" style="display:none">
       <table>
-        <thead>
-          <tr>
-            <th style="width:40px">#</th>
-            <th>대분류</th>
-            <th>공종(중분류)</th>
-            <th>업체명</th>
-            <th>대표자</th>
-            <th>소재지</th>
-            <th style="text-align:right">시공능력평가액(백만원)</th>
-            <th style="text-align:center">공종내순위</th>
-          </tr>
-        </thead>
+        <thead id="tableHead"></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
@@ -188,130 +248,235 @@ tr:hover td{background:var(--color-surface-2)}
 </main>
 
 <script>
-// 테마 토글
+const CI = {cat:0,sub:1,rank:2,name:3,rep:4,addr:5,reg:6,amt:7};
+const COLORS = ['#3b82f6','#f59e0b','#8b5cf6','#ec4899','#10b981'];
+const LABELS = ['①','②','③','④','⑤'];
+
+let DATA = [], filtered = [], currentPage = 1;
+const PAGE_SIZE = 50;
+let loadedCount = 0;
+let lastEP = null;
+
+// 테마
 (function(){
   const btn=document.querySelector('[data-theme-toggle]'),root=document.documentElement;
   let dark=matchMedia('(prefers-color-scheme:dark)').matches;
   root.setAttribute('data-theme',dark?'dark':'light');
-  updateIcon(dark);
-  btn.addEventListener('click',()=>{dark=!dark;root.setAttribute('data-theme',dark?'dark':'light');updateIcon(dark);});
-  function updateIcon(d){btn.innerHTML=d?'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
+  upd(dark);
+  btn.addEventListener('click',()=>{dark=!dark;root.setAttribute('data-theme',dark?'dark':'light');upd(dark);});
+  function upd(d){btn.innerHTML=d
+    ?'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+    :'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
 })();
 
-let DATA=[], filtered=[], currentPage=1;
-const PAGE_SIZE=50;
-
-// 데이터 분할 로드 (data1.js → data2.js → data3.js)
-let loadedCount=0;
-function onChunkLoaded(chunk, n) {
-  DATA = DATA.concat(chunk);
+// 데이터 로드
+function onChunkLoaded(chunk) {
+  DATA = DATA.concat(chunk.r);
   loadedCount++;
-  const pct = loadedCount * 33;
-  document.getElementById('loadBar').style.width = Math.min(pct, 99) + '%';
-  document.getElementById('loadMsg').textContent = loadedCount < 3
+  document.getElementById('loadBar').style.width = (loadedCount*33)+'%';
+  document.getElementById('loadMsg').textContent = loadedCount<3
     ? `데이터 로딩 중... (${loadedCount+1}/3)`
     : `총 ${DATA.length.toLocaleString()}건 로드 완료`;
-  if (loadedCount === 3) finishLoad();
+  if (loadedCount===3) finishLoad();
 }
 
 function finishLoad() {
-  document.getElementById('loadBar').style.width = '100%';
-  setTimeout(() => {
+  document.getElementById('loadBar').style.width='100%';
+  setTimeout(()=>{
     document.getElementById('loadingOverlay').classList.add('hidden');
-    document.getElementById('totalBadge').textContent = `총 ${DATA.length.toLocaleString()}개 업체`;
-    buildCategoryDropdown();
-  }, 400);
+    document.getElementById('totalBadge').textContent=`총 ${DATA.length.toLocaleString()}개 업체`;
+    buildDropdown();
+  },400);
 }
 
-function buildCategoryDropdown() {
-  const sel = document.getElementById('inputCategory');
-  const grouped = {};
-  DATA.forEach(r => {
-    if (!grouped[r['대분류']]) grouped[r['대분류']] = new Set();
-    if (r['중분류']) grouped[r['대분류']].add(r['중분류']);
+function buildDropdown() {
+  const sel=document.getElementById('inputCategory');
+  const grouped={};
+  DATA.forEach(r=>{
+    const c=r[CI.cat],s=r[CI.sub];
+    if(!grouped[c])grouped[c]=new Set();
+    if(s)grouped[c].add(s);
   });
-  const order = ['종합건설','전문건설','기계설비','소방설비','전기설비','정보통신'];
-  order.forEach(cat => {
-    if (!grouped[cat]) return;
-    const og = document.createElement('optgroup');
-    og.label = cat;
-    [...grouped[cat]].sort().forEach(sub => {
-      const opt = document.createElement('option');
-      opt.value = sub; opt.textContent = sub;
-      og.appendChild(opt);
+  ['종합건설','전문건설','기계설비','소방설비','전기설비','정보통신'].forEach(cat=>{
+    if(!grouped[cat])return;
+    const og=document.createElement('optgroup');og.label=cat;
+    [...grouped[cat]].sort().forEach(sub=>{
+      const o=document.createElement('option');o.value=sub;o.textContent=sub;og.appendChild(o);
     });
     sel.appendChild(og);
   });
 }
 
-function setMode(mode) {
-  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+// 업체 행 추가/제거
+function getNames() {
+  return [...document.querySelectorAll('#companyInputs .company-row input')]
+    .map(i=>i.value.trim()).filter(v=>v!=='');
 }
 
-document.getElementById('inputCompany').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
-document.getElementById('inputCategory').addEventListener('change', () => {
-  if (document.querySelector('.mode-tab.active').dataset.mode === 'category') doSearch();
-});
+function addRow() {
+  const rows = document.querySelectorAll('#companyInputs .company-row');
+  if (rows.length >= 5) { alert('최대 5개 업체까지 추가할 수 있습니다.'); return; }
+  const idx = rows.length;
+  const div = document.createElement('div');
+  div.className = 'company-row';
+  div.dataset.idx = idx;
+  div.innerHTML = `
+    <span class="row-label">${LABELS[idx]}</span>
+    <input type="text" placeholder="업체명 입력" autocomplete="off" onkeydown="handleKey(event)">
+    <button class="btn-del-row" onclick="delRow(this)" title="삭제">−</button>`;
+  document.getElementById('companyInputs').appendChild(div);
+}
 
+function delRow(btn) {
+  btn.closest('.company-row').remove();
+  reindexRows();
+}
+
+function reindexRows() {
+  document.querySelectorAll('#companyInputs .company-row').forEach((row,i)=>{
+    row.dataset.idx = i;
+    row.querySelector('.row-label').textContent = LABELS[i];
+  });
+}
+
+function handleKey(e) { if(e.key==='Enter') doSearch(); }
+
+// 검색
 function doSearch() {
-  const company = document.getElementById('inputCompany').value.trim();
+  const names = getNames();
   const category = document.getElementById('inputCategory').value;
-  if (!company && !category) { alert('업체명 또는 공종을 입력해주세요.'); return; }
-  document.getElementById('stateBox').style.display = 'none';
+  const epRaw = document.getElementById('inputEP').value.trim();
+  lastEP = epRaw !== '' ? parseFloat(epRaw) : null;
+
+  if (names.length===0 && !category) { alert('업체명 또는 공종을 입력해주세요.'); return; }
+
+  document.getElementById('stateBox').style.display='none';
   document.getElementById('inlineLoading').classList.add('active');
-  document.getElementById('tableWrap').style.display = 'none';
-  document.getElementById('pagination').style.display = 'none';
-  setTimeout(() => {
-    filtered = DATA.filter(r => {
-      const nm = company ? (r['상호']||'').includes(company) : true;
-      const ct = category ? r['중분류'] === category : true;
-      return nm && ct;
+  document.getElementById('tableWrap').style.display='none';
+  document.getElementById('pagination').style.display='none';
+  document.getElementById('legend').style.display='none';
+
+  setTimeout(()=>{
+    // 각 행마다 색인 번호 붙이기
+    const nameList = names.length>0 ? names : ['']; // 이름 없으면 전체
+    filtered = [];
+    const usedNames = names.length>0 ? names : null;
+
+    DATA.forEach(r=>{
+      const catMatch = category ? r[CI.sub]===category : true;
+      if (!catMatch) return;
+      if (!usedNames) {
+        // 공종만 검색 → 이름 필터 없음
+        filtered.push({row:r, colorIdx:-1});
+        return;
+      }
+      usedNames.forEach((nm,ci)=>{
+        if (nm && (r[CI.name]||'').includes(nm)) {
+          filtered.push({row:r, colorIdx:ci});
+        }
+      });
     });
-    const mode = document.querySelector('.mode-tab.active').dataset.mode;
-    if (mode === 'category' || category) {
-      filtered.sort((a,b)=>(Number(a['순위'])||9999)-(Number(b['순위'])||9999));
+
+    // 정렬: 이름 우선 → 대분류 → 순위
+    if (category) {
+      filtered.sort((a,b)=>{
+        if(a.colorIdx!==b.colorIdx)return a.colorIdx-b.colorIdx;
+        return (Number(a.row[CI.rank])||9999)-(Number(b.row[CI.rank])||9999);
+      });
     } else {
       const order=['종합건설','전문건설','기계설비','소방설비','전기설비','정보통신'];
-      filtered.sort((a,b)=>order.indexOf(a['대분류'])-order.indexOf(b['대분류']));
+      filtered.sort((a,b)=>{
+        if(a.colorIdx!==b.colorIdx)return a.colorIdx-b.colorIdx;
+        const od=order.indexOf(a.row[CI.cat])-order.indexOf(b.row[CI.cat]);
+        return od!==0?od:(Number(a.row[CI.rank])||9999)-(Number(b.row[CI.rank])||9999);
+      });
     }
+
     document.getElementById('inlineLoading').classList.remove('active');
-    currentPage = 1;
+    currentPage=1;
     renderTable();
-    updateStatus(company, category);
+    updateStatus(names, category);
+    renderLegend(names);
+    updateEPBadge();
   }, 60);
 }
 
+function renderLegend(names) {
+  const lg=document.getElementById('legend');
+  if(names.length<=1){lg.style.display='none';return;}
+  lg.innerHTML=names.map((nm,i)=>
+    `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i]}"></div>${nm||'(미입력)'}</div>`
+  ).join('');
+  lg.style.display='flex';
+}
+
+function updateEPBadge() {
+  const b=document.getElementById('epBadge');
+  if(lastEP!==null){
+    b.textContent=`예정가격: ${Number(lastEP).toLocaleString('ko-KR')} 백만원`;
+    b.style.display='inline-flex';
+  } else {
+    b.style.display='none';
+  }
+}
+
 function renderTable() {
-  const tbody = document.getElementById('tableBody');
-  const start = (currentPage-1)*PAGE_SIZE;
-  const pageData = filtered.slice(start, start+PAGE_SIZE);
-  if (filtered.length === 0) {
+  const start=(currentPage-1)*PAGE_SIZE;
+  const pageData=filtered.slice(start,start+PAGE_SIZE);
+  const showEP = lastEP!==null;
+
+  // 헤더
+  document.getElementById('tableHead').innerHTML=`<tr>
+    <th style="width:36px">#</th>
+    <th>대분류</th><th>공종(중분류)</th><th>업체명</th><th>대표자</th><th>소재지</th>
+    <th style="text-align:right">시공능력평가액(백만원)</th>
+    <th style="text-align:center">공종내순위</th>
+    ${showEP?`<th style="text-align:center">예정가격 초과여부</th>`:''}
+  </tr>`;
+
+  if(filtered.length===0){
     document.getElementById('tableWrap').style.display='none';
     document.getElementById('pagination').style.display='none';
-    const sb = document.getElementById('stateBox');
+    const sb=document.getElementById('stateBox');
     sb.style.display='flex';
     sb.innerHTML=`<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>검색 결과가 없습니다</p><small>업체명을 다시 확인해주세요</small>`;
     return;
   }
-  tbody.innerHTML = pageData.map((r,i) => {
-    const rank = r['순위'] ? Number(r['순위']) : '-';
-    const amt = r['시공능력평가액'] ? Number(r['시공능력평가액']).toLocaleString('ko-KR') : '-';
-    return `<tr>
+
+  const tbody=document.getElementById('tableBody');
+  tbody.innerHTML=pageData.map(({row:r,colorIdx},i)=>{
+    const rank=r[CI.rank]?Number(r[CI.rank]):'-';
+    const amt=r[CI.amt]!==''?Number(r[CI.amt]):null;
+    const amtStr=amt!==null?amt.toLocaleString('ko-KR'):'-';
+    const rowClass=colorIdx>=0?`row-c${colorIdx+1}`:'';
+    let exceedCell='';
+    if(showEP){
+      if(amt===null){
+        exceedCell=`<td class="exceed-na">—</td>`;
+      } else if(amt>=lastEP){
+        exceedCell=`<td class="exceed-yes">✓ 초과</td>`;
+      } else {
+        exceedCell=`<td class="exceed-no">✗ 미달</td>`;
+      }
+    }
+    return `<tr class="${rowClass}">
       <td style="color:var(--color-text-faint);font-size:12px">${start+i+1}</td>
-      <td><span class="col-tag tag-${r['대분류']}">${r['대분류']}</span></td>
-      <td style="color:var(--color-text-muted);white-space:nowrap">${r['중분류']||'-'}</td>
-      <td class="col-name">${r['상호']||'-'}</td>
-      <td style="color:var(--color-text-muted)">${r['대표자']||'-'}</td>
-      <td style="color:var(--color-text-muted)">${r['소재지']||'-'}</td>
-      <td class="col-amount">${amt}</td>
+      <td><span class="col-tag tag-${r[CI.cat]}">${r[CI.cat]}</span></td>
+      <td style="color:var(--color-text-muted);white-space:nowrap">${r[CI.sub]||'-'}</td>
+      <td class="col-name">${r[CI.name]||'-'}</td>
+      <td style="color:var(--color-text-muted)">${r[CI.rep]||'-'}</td>
+      <td style="color:var(--color-text-muted)">${r[CI.addr]||'-'}</td>
+      <td class="col-amount">${amtStr}</td>
       <td class="col-rank ${rank!=='-'&&rank<=100?'rank-top':''}">${rank}</td>
+      ${exceedCell}
     </tr>`;
   }).join('');
+
   document.getElementById('tableWrap').style.display='block';
   renderPagination();
 }
 
-function renderPagination() {
+function renderPagination(){
   const total=Math.ceil(filtered.length/PAGE_SIZE);
   const pg=document.getElementById('pagination');
   if(total<=1){pg.style.display='none';return;}
@@ -324,7 +489,7 @@ function renderPagination() {
       html+=`<span class="page-info">…</span>`;
   }
   html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>›</button>`;
-  html+=`<span class="page-info">${currentPage}/${total} 페이지</span>`;
+  html+=`<span class="page-info">${currentPage}/${total}p</span>`;
   pg.innerHTML=html;
 }
 
@@ -336,8 +501,12 @@ function goPage(p){
   document.querySelector('.results-container').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function updateStatus(company, category) {
-  const cnt=filtered.length, q=[company,category].filter(Boolean).join(' + ');
+function updateStatus(names,category){
+  const cnt=filtered.length;
+  const parts=[];
+  if(names.length>0)parts.push(names.filter(Boolean).join(' + '));
+  if(category)parts.push(category);
+  const q=parts.join(' | ');
   document.getElementById('resultCount').innerHTML=cnt>0
     ?`<strong>"${q}"</strong> 검색 결과 <strong>${cnt.toLocaleString()}건</strong>`
     :`검색 결과 없음`;
@@ -345,19 +514,24 @@ function updateStatus(company, category) {
 }
 
 function exportCSV(){
-  const headers=['대분류','중분류','순위','업체명','대표자','소재지','등록번호','시공능력평가액(백만원)'];
-  const rows=filtered.map(r=>[r['대분류'],r['중분류'],r['순위'],r['상호'],r['대표자'],r['소재지'],r['등록번호'],r['시공능력평가액']]);
-  const csv='\uFEFF'+[headers,...rows].map(r=>r.map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const showEP=lastEP!==null;
+  const hdr=['대분류','중분류','순위','업체명','대표자','소재지','등록번호','시공능력평가액(백만원)'];
+  if(showEP)hdr.push(`예정가격초과여부(기준:${lastEP}백만원)`);
+  const rows=filtered.map(({row:r})=>{
+    const amt=r[CI.amt]!==''?Number(r[CI.amt]):null;
+    const line=[r[CI.cat],r[CI.sub],r[CI.rank],r[CI.name],r[CI.rep],r[CI.addr],r[CI.reg],r[CI.amt]];
+    if(showEP)line.push(amt===null?'':amt>=lastEP?'초과':'미달');
+    return line;
+  });
+  const csv='\uFEFF'+[hdr,...rows].map(r=>r.map(v=>`"${(v??'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download=`건설업검색_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
 }
 </script>
-
-<!-- 3개 파일 순차 로드 -->
-<script src="./data1.js" onload="onChunkLoaded(DATA1,1)" onerror="document.getElementById('loadMsg').textContent='data1.js 파일을 찾을 수 없습니다'"></script>
-<script src="./data2.js" onload="onChunkLoaded(DATA2,2)" onerror="document.getElementById('loadMsg').textContent='data2.js 파일을 찾을 수 없습니다'"></script>
-<script src="./data3.js" onload="onChunkLoaded(DATA3,3)" onerror="document.getElementById('loadMsg').textContent='data3.js 파일을 찾을 수 없습니다'"></script>
+<script src="./data1.js" onload="onChunkLoaded(DATA1)" onerror="document.getElementById('loadMsg').textContent='❌ data1.js 없음'"></script>
+<script src="./data2.js" onload="onChunkLoaded(DATA2)" onerror="document.getElementById('loadMsg').textContent='❌ data2.js 없음'"></script>
+<script src="./data3.js" onload="onChunkLoaded(DATA3)" onerror="document.getElementById('loadMsg').textContent='❌ data3.js 없음'"></script>
 </body>
 </html>
