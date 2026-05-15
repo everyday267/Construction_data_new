@@ -1,0 +1,150 @@
+{
+  "dataset": "construction_capability_2025",
+  "description": "2025 Korea Construction Industry Capability Evaluation Dataset",
+  "source": "Korean Ministry of Land, Infrastructure and Transport",
+  "year": 2025,
+  "unit": {
+    "시공능력평가액": "백만원 (종합건설·전문건설·기계설비), 원 (전기설비·소방설비·정보통신)",
+    "건설공사실적": "백만원"
+  },
+  "index_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/dataset-map.json",
+  "how_to_use": {
+    "usecase_1_업체조회": {
+      "description": "특정 업체의 공종별 시공능력평가액 전체 조회",
+      "steps": [
+        "1. 조회할 업체명을 확인한다",
+        "2. 모든 파일(files 목록)에서 '상호' 컬럼이 업체명과 일치하는 행을 검색한다",
+        "3. 검색된 모든 행의 대분류·중분류·시공능력평가액·공사실적평가액·순위를 반환한다"
+      ],
+      "key_columns": [
+        "상호",
+        "대분류",
+        "중분류",
+        "시공능력평가액",
+        "공사실적평가액",
+        "경영평가액",
+        "기술능력평가액",
+        "신인도평가액",
+        "순위"
+      ],
+      "example_query": "삼성물산 주식회사의 모든 공종별 시공능력평가액을 알려줘"
+    },
+    "usecase_2_공종별순위조회": {
+      "description": "특정 공종에서 특정 업체의 시공능력평가액 및 순위 조회",
+      "steps": [
+        "1. 조회할 대분류와 중분류(공종)를 확인한다",
+        "2. 해당 대분류 파일(raw_url)을 로드한다",
+        "3. 중분류 컬럼으로 공종을 필터링한 뒤 업체명으로 행을 찾는다",
+        "4. 시공능력평가액·순위·공사실적평가액을 반환한다"
+      ],
+      "key_columns": [
+        "대분류",
+        "중분류",
+        "상호",
+        "순위",
+        "시공능력평가액",
+        "공사실적평가액"
+      ],
+      "example_query": "삼성물산 주식회사의 토목건축공사업 시공능력평가액과 순위를 알려줘"
+    }
+  },
+  "columns_description": {
+    "대분류": "종합건설 / 전문건설 / 기계설비 / 소방설비 / 전기설비 / 정보통신",
+    "중분류": "공종명 (예: 토목건축공사업, 지반조성·포장, 전기공사업 등)",
+    "순위": "해당 공종 내 시공능력평가액 기준 순위",
+    "상호": "업체명 (검색 시 이 컬럼 사용)",
+    "대표자": "대표자명",
+    "소재지": "업체 소재 지역",
+    "등록번호": "건설업 등록번호",
+    "시공능력평가액": "시공능력평가 총액",
+    "공사실적평가액": "공사실적 평가액 (일부 대분류 미제공)",
+    "경영평가액": "경영상태 평가액 (일부 대분류 미제공)",
+    "기술능력평가액": "기술인력 평가액 (일부 대분류 미제공)",
+    "신인도평가액": "신인도 평가액 (일부 대분류 미제공)",
+    "건설공사실적": "직전연도 건설공사실적 (일부 대분류 미제공)",
+    "기술자수": "보유 기술자 수 (일부 대분류 미제공)"
+  },
+  "files": [
+    {
+      "major_category_kr": "종합건설",
+      "file_name": "general_construction.csv",
+      "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/general_construction.csv",
+      "rows": 19610,
+      "size_mb": 2.0,
+      "sub_categories": [
+        "토목건축공사업",
+        "토목공사업",
+        "건축공사업",
+        "산업환경설비공사업",
+        "조경공사업"
+      ],
+      "note": "시공능력평가액 단위: 백만원"
+    },
+    {
+      "major_category_kr": "전문건설",
+      "file_name": "specialty_construction.csv",
+      "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/specialty_construction.csv",
+      "rows": 76118,
+      "size_mb": 9.27,
+      "sub_categories": [
+        "지반조성·포장",
+        "실내건축",
+        "금속·창호·지붕·건축물조립",
+        "도장·습식·방수·석공",
+        "조경식재·시설물",
+        "철근·콘크리트",
+        "구조물해체·비계",
+        "상·하수도",
+        "철도·궤도",
+        "철강구조물",
+        "수중·준설",
+        "승강기·삭도"
+      ],
+      "note": "시공능력평가액 단위: 백만원. 동일 업체가 여러 공종에 등록 가능"
+    },
+    {
+      "major_category_kr": "기계설비",
+      "file_name": "mechanical_gas.csv",
+      "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/mechanical_gas.csv",
+      "rows": 7694,
+      "size_mb": 0.97,
+      "sub_categories": [
+        "기계설비·가스공사업"
+      ],
+      "note": "시공능력평가액 단위: 백만원"
+    },
+    {
+      "major_category_kr": "소방설비",
+      "file_name": "fire_protection.csv",
+      "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/fire_protection.csv",
+      "rows": 6840,
+      "size_mb": 0.74,
+      "sub_categories": [
+        "소방시설공사업"
+      ],
+      "note": "시공능력평가액 단위: 원. 공사실적·항목별평가액 미제공"
+    },
+    {
+      "major_category_kr": "전기설비",
+      "file_name": "electrical.csv",
+      "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/electrical.csv",
+      "rows": 21179,
+      "size_mb": 2.92,
+      "sub_categories": [
+        "전기공사업"
+      ],
+      "note": "시공능력평가액 단위: 원. 공사실적·항목별평가액 미제공"
+    },
+    {
+      "major_category_kr": "정보통신",
+      "file_name": "ict_communication.csv",
+      "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/ict_communication.csv",
+      "rows": 11796,
+      "size_mb": 1.04,
+      "sub_categories": [
+        "정보통신공사업"
+      ],
+      "note": "시공능력평가액 단위: 원. 대표자·소재지·공사실적 미제공"
+    }
+  ]
+}
