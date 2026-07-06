@@ -26,11 +26,11 @@ OUT_PATH = ROOT / "data" / "normalized.json"
 # rank_policy: "source"=원본 순위 사용, "recompute"=평가액 내림차순 재산정 (PRD §6.4)
 SOURCES = [
     {"file": "general_construction.csv",   "cat": "종합건설", "divisor": 1,    "rank_policy": "source",    "baseline_rows": 19610},
-    {"file": "specialty_construction.csv", "cat": "전문건설", "divisor": 1,    "rank_policy": "source",    "baseline_rows": 76118},
+    {"file": "specialty_construction.csv", "cat": "전문건설", "divisor": 1,    "rank_policy": "recompute", "baseline_rows": 76118},
     {"file": "mechanical_gas.csv",         "cat": "기계설비", "divisor": 1,    "rank_policy": "recompute", "baseline_rows": 7694},
-    {"file": "fire_protection.csv",        "cat": "소방설비", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 6840},
+    {"file": "fire_protection.csv",        "cat": "소방설비", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 6845},
     {"file": "electrical.csv",             "cat": "전기설비", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 21179},
-    {"file": "ict_communication.csv",      "cat": "정보통신", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 11796},
+    {"file": "ict_communication.csv",      "cat": "정보통신", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 11836},
 ]
 
 REQUIRED_COLS = ["대분류", "중분류", "순위", "상호", "시공능력평가액"]

@@ -15,15 +15,17 @@
 ## 데이터 흐름
 
 ```
-협회 엑셀 5종 + KECA 크롤링(scripts/crawl_keca.py)
-        → raw/*.csv (표준 14컬럼, UTF-8 BOM)
-        → scripts/normalize.py   (단위 통일·정제·품질 검증 → data/normalized.json)
-        → scripts/build_html.py  (→ construction_capability_search_v5.html)
+협회 원본 5종(RAW_new/, xlsx·csv 혼합) + KECA 크롤링(scripts/crawl_keca.py)
+        → scripts/convert_raw.py  (시트·헤더·인코딩 처리 → raw/*.csv 표준 14컬럼)
+        → scripts/normalize.py    (단위 통일·순위 재산정·품질 검증 → data/normalized.json)
+        → scripts/build_html.py   (→ construction_capability_search_v5.html)
 ```
 
 ## 빌드 방법
 
 ```bash
+pip install openpyxl
+python scripts/convert_raw.py                # RAW_new/ 원본 → raw/*.csv
 python scripts/normalize.py                  # raw/*.csv → data/normalized.json (+검증)
 python scripts/build_html.py --year 2025     # → construction_capability_search_v5.html
 ```
@@ -37,6 +39,7 @@ python scripts/build_html.py --year 2025     # → construction_capability_searc
 | 경로 | 내용 |
 |---|---|
 | `docs/PRD.md` | 제품 요구사항 문서 (소스 명세·크롤링 방법·정규화 규칙) |
+| `RAW_new/` | 협회 제공 원본 파일 (xlsx·csv) |
 | `raw/` | 소스별 표준 raw CSV 6개 |
 | `scripts/` | 크롤러·정규화·빌드 스크립트, HTML 템플릿 |
 | `data/` | 파이프라인 중간 산출물 (git 미추적) |
