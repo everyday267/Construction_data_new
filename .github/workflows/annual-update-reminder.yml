@@ -1,0 +1,38 @@
+name: 연간 데이터 갱신 알림
+
+# 시공능력평가 연간 공시 직후인 매년 8월 2일(KST 07:00)에 갱신 체크리스트 이슈를 생성한다.
+# 상세 절차: docs/PRD.md §9
+on:
+  schedule:
+    - cron: '0 22 1 8 *'   # UTC 8/1 22:00 = KST 8/2 07:00
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  create-reminder-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const year = new Date().getFullYear();
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[정기] ${year}년 시공능력평가 데이터 갱신 (매년 8월 2일)`,
+              body: [
+                `${year}년 시공능력평가 공시 데이터 갱신 작업입니다. 상세 절차는 \`docs/PRD.md\` §9 참고.`,
+                '',
+                '- [ ] 1. 협회 엑셀 다운로드 (대한건설협회 / 대한전문건설협회 / 대한기계설비건설협회 / 한국소방시설협회 / 한국정보통신공사협회)',
+                '- [ ] 2. KECA 크롤링 — PRD §4.6 체크리스트 확인 후 `scripts/crawl_keca.py` 소량 테스트(3페이지) → 전체 실행',
+                '- [ ] 3. 원본 → 표준 raw CSV 변환 (PRD §5.1 헤더) 후 `raw/` 교체',
+                '- [ ] 4. `python scripts/normalize.py` — 품질 검증(Q1~Q6) 통과 확인',
+                `- [ ] 5. \`python scripts/build_html.py --year ${year}\` — 조회기 HTML 생성`,
+                '- [ ] 6. `dataset-map.json` 연도·행수 갱신',
+                '- [ ] 7. 표본 검증 — 각 대분류 1위 업체가 협회 공시와 일치하는지 확인',
+                '- [ ] 8. 커밋·푸시',
+              ].join('\n'),
+              labels: ['data-update'],
+            });

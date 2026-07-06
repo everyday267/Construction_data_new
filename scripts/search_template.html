@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>건설업 시공능력평가 조회 (__YEAR__)_v5</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕',Malgun Gothic,sans-serif;background:#f5f5f5;font-size:13px}
+header{background:#01696f;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:16px;font-weight:700}
+#totalBadge{font-size:11px;color:#a8dde0}
+.panel{background:#fff;margin:12px;padding:16px;border:1px solid #e0e0e0;border-radius:6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:8px}
+label{font-size:11px;font-weight:700;color:#666;display:block;margin-bottom:3px}
+input[type=text],select{border:1px solid #ccc;border-radius:4px;padding:6px 10px;font-size:13px;font-family:inherit;outline:none}
+input[type=text]:focus,select:focus{border-color:#01696f}
+.name-wrap{display:flex;flex-direction:column;gap:4px}
+.name-row{display:flex;gap:4px;align-items:center}
+.name-row span{color:#aaa;font-size:11px;width:16px;text-align:center}
+.btn{border:none;border-radius:4px;padding:7px 18px;font-size:13px;font-family:inherit;cursor:pointer;font-weight:700}
+.btn-primary{background:#01696f;color:#fff}.btn-primary:hover{background:#0c4e54}
+.btn-add{background:#f0f0f0;color:#01696f;padding:5px 10px;font-size:14px}
+.btn-del{background:#f0f0f0;color:#c0392b;padding:5px 10px;font-size:14px}
+.btn-export{background:#f0f0f0;color:#333;font-weight:400}
+#statusBar{padding:4px 16px;font-size:11px;color:#666}
+.tbl-wrap{margin:0 12px 12px;overflow:auto;border:1px solid #e0e0e0;border-radius:6px;background:#fff;max-height:calc(100vh - 280px)}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{background:#f0f0f0;padding:8px 10px;text-align:left;font-weight:700;position:sticky;top:0;z-index:1;cursor:pointer;white-space:nowrap;border-bottom:2px solid #ddd}
+thead th:hover{background:#e0e0e0}
+thead th.num,thead th.amt,thead th.rank{text-align:right}
+tbody tr:nth-child(even){background:#fafafa}
+tbody tr:hover{background:#e8f4f5}
+td{padding:7px 10px;border-bottom:1px solid #f0f0f0;white-space:nowrap}
+td.num,td.amt,td.rank{text-align:right}
+.exceed{color:#16a34a;font-weight:700}
+.lack{color:#dc2626;font-weight:700}
+.loader{text-align:center;padding:40px;color:#666}
+.tag-c0{color:#1d4ed8}.tag-c1{color:#d97706}.tag-c2{color:#7c3aed}.tag-c3{color:#db2777}.tag-c4{color:#059669}
+.tag-c5{color:#0e7490}.tag-c6{color:#92400e}.tag-c7{color:#166534}.tag-c8{color:#9d174d}.tag-c9{color:#374151}
+.cat-multi-wrap{position:relative;display:inline-block;min-width:220px}
+.cat-selected-box{border:1px solid #ccc;border-radius:4px;padding:5px 10px;font-size:13px;cursor:pointer;background:#fff;min-height:32px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:220px}
+.cat-selected-box:focus-within{border-color:#01696f}
+.cat-tag{background:#e0f2f1;color:#01696f;border-radius:3px;padding:2px 6px;font-size:12px;display:flex;align-items:center;gap:3px}
+.cat-tag button{border:none;background:none;color:#01696f;cursor:pointer;font-size:13px;padding:0;line-height:1}
+.cat-placeholder{color:#aaa;font-size:13px}
+.cat-dropdown{position:absolute;top:100%;left:0;min-width:220px;max-height:260px;overflow-y:auto;background:#fff;border:1px solid #ccc;border-radius:4px;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,.12);display:none}
+.cat-dropdown.open{display:block}
+.cat-option{padding:7px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.cat-option:hover{background:#e8f4f5}
+.cat-option.selected{background:#e0f2f1;font-weight:700;color:#01696f}
+.cat-option input[type=checkbox]{accent-color:#01696f;width:14px;height:14px}
+.cat-limit-msg{padding:5px 12px;font-size:11px;color:#c0392b;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1>건설업 시공능력평가 조회 (__YEAR__)_v5 <span style="font-size:11px;font-weight:400;color:#a8dde0;margin-left:6px">기준: __YEAR__년 공시 · 매년 8월 2일 갱신</span></h1>
+  <span id="totalBadge">데이터 로딩 중...</span>
+</header>
+
+<div class="panel">
+  <div class="row">
+    <div>
+      <label>업체명 검색 (최대 10개, 부분검색 가능)</label>
+      <div class="name-wrap" id="nameWrap">
+        <div class="name-row"><span>①</span><input type="text" class="name-input" placeholder="업체명 입력" style="width:260px" onkeydown="if(event.key==='Enter')doSearch()"><button class="btn btn-add" onclick="addNameRow()" title="추가">＋</button></div>
+      </div>
+    </div>
+    <div>
+      <label>공종 선택 (최대 3개)</label>
+      <div class="cat-multi-wrap" id="catMultiWrap">
+        <div class="cat-selected-box" id="catSelectedBox" onclick="toggleCatDropdown(event)">
+          <span class="cat-placeholder" id="catPlaceholder">전체 공종</span>
+        </div>
+        <div class="cat-dropdown" id="catDropdown"></div>
+      </div>
+    </div>
+    <div>
+      <label>예정가격 (백만원)</label>
+      <input type="text" id="epInput" placeholder="예: 5000" style="width:140px" onkeydown="if(event.key==='Enter')doSearch()">
+    </div>
+    <div>
+      <button class="btn btn-primary" onclick="doSearch()">검  색</button>
+      <button class="btn btn-export" onclick="exportCSV()" style="margin-left:6px">CSV 내보내기</button>
+    </div>
+  </div>
+</div>
+
+<div id="statusBar">데이터 초기화 중...</div>
+
+<div class="tbl-wrap">
+<table id="resultTable">
+  <thead>
+    <tr>
+      <th class="num" onclick="sortBy('no')">#</th>
+      <th onclick="sortBy('cat')">대분류</th>
+      <th onclick="sortBy('sub')">공종(중분류)</th>
+      <th onclick="sortBy('name')">업체명</th>
+      <th onclick="sortBy('rep')">대표자</th>
+      <th onclick="sortBy('addr')">소재지</th>
+      <th id="thBizno" onclick="sortBy('bizno')">사업자번호</th>
+      <th class="amt" onclick="sortBy('amt')">평가액(백만원)</th>
+      <th class="rank" onclick="sortBy('rank')">공종내순위</th>
+      <th style="width:52px">제외</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"><tr><td colspan="10" class="loader">데이터 로딩 중... 잠시만 기다려주세요</td></tr></tbody>
+</table>
+</div>
+
+<script>
+const RAW = __DATA__;
+const HAS_BIZNO = RAW.some(r=>r.bizno);
+
+let filtered = [];
+let sortCol = null, sortRev = false;
+const catOrder = {'종합건설':0,'전문건설':1,'기계설비':2,'소방설비':3,'전기설비':4,'정보통신':5};
+
+// 공종 드롭다운
+(function initCat(){
+  const subs = [...new Set(RAW.map(r=>r.sub).filter(Boolean))].sort();
+  window._catSubs = subs;
+  window._catSelected = [];
+  const dd = document.getElementById('catDropdown');
+  subs.forEach(s=>{
+    const div = document.createElement('div');
+    div.className = 'cat-option';
+    div.dataset.val = s;
+    div.innerHTML = `<input type="checkbox" data-val="${s}" onchange="onCatCheck(this)"><span>${s}</span>`;
+    div.addEventListener('click', e=>{ if(e.target.tagName!=='INPUT'){ const cb=div.querySelector('input'); cb.checked=!cb.checked; onCatCheck(cb); } });
+    dd.appendChild(div);
+  });
+  if(!HAS_BIZNO) document.getElementById('thBizno').style.display = 'none';
+  document.getElementById('totalBadge').textContent = `총 ${RAW.length.toLocaleString()}개 업체`;
+  document.getElementById('statusBar').textContent = '데이터 로드 완료. 업체명을 입력하고 검색하세요.';
+})();
+
+function toggleCatDropdown(e){
+  e.stopPropagation();
+  document.getElementById('catDropdown').classList.toggle('open');
+}
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('catMultiWrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('catDropdown').classList.remove('open');
+  }
+});
+
+function onCatCheck(cb){
+  const val = cb.dataset.val;
+  const sel = window._catSelected;
+  if(cb.checked){
+    if(sel.length >= 3){ cb.checked=false; showCatLimitMsg(); return; }
+    if(!sel.includes(val)) sel.push(val);
+  } else {
+    const idx = sel.indexOf(val);
+    if(idx>-1) sel.splice(idx,1);
+  }
+  renderCatSelected();
+  updateCatOptions();
+}
+
+function showCatLimitMsg(){
+  const dd = document.getElementById('catDropdown');
+  let msg = dd.querySelector('.cat-limit-msg');
+  if(!msg){ msg=document.createElement('div'); msg.className='cat-limit-msg'; dd.insertBefore(msg, dd.firstChild); }
+  msg.textContent = '⚠ 최대 3개까지 선택 가능합니다';
+  clearTimeout(msg._t);
+  msg._t = setTimeout(()=>msg.remove(), 2000);
+}
+
+function renderCatSelected(){
+  const box = document.getElementById('catSelectedBox');
+  const ph = document.getElementById('catPlaceholder');
+  const sel = window._catSelected;
+  // 기존 태그 제거
+  box.querySelectorAll('.cat-tag').forEach(t=>t.remove());
+  if(sel.length === 0){
+    ph.style.display = '';
+  } else {
+    ph.style.display = 'none';
+    sel.forEach(v=>{
+      const tag = document.createElement('span');
+      tag.className = 'cat-tag';
+      tag.innerHTML = `${v}<button onclick="removeCatTag('${v}',event)" title="제거">×</button>`;
+      box.insertBefore(tag, ph);
+    });
+  }
+}
+
+function removeCatTag(val, e){
+  e.stopPropagation();
+  const sel = window._catSelected;
+  const idx = sel.indexOf(val);
+  if(idx>-1) sel.splice(idx,1);
+  const cb = document.querySelector(`#catDropdown input[data-val="${CSS.escape(val)}"]`);
+  if(cb) cb.checked = false;
+  renderCatSelected();
+  updateCatOptions();
+}
+
+function updateCatOptions(){
+  const sel = window._catSelected;
+  document.querySelectorAll('#catDropdown .cat-option').forEach(opt=>{
+    const v = opt.dataset.val;
+    const isSelected = sel.includes(v);
+    opt.classList.toggle('selected', isSelected);
+    const cb = opt.querySelector('input');
+    if(cb) cb.checked = isSelected;
+    opt.style.opacity = (!isSelected && sel.length>=3) ? '0.45' : '';
+  });
+}
+
+function getCats(){ return window._catSelected || []; }
+
+function getNames(){
+  return [...document.querySelectorAll('.name-input')].map(e=>e.value.trim()).filter(Boolean);
+}
+
+function addNameRow(){
+  const wrap = document.getElementById('nameWrap');
+  if(wrap.children.length >= 10){ alert('최대 10개까지 입력할 수 있습니다.'); return; }
+  const idx = wrap.children.length;
+  const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+  const div = document.createElement('div'); div.className='name-row';
+  div.innerHTML = `<span>${nums[idx]}</span><input type="text" class="name-input" placeholder="업체명 입력" style="width:260px" onkeydown="if(event.key==='Enter')doSearch()"><button class="btn btn-del" onclick="this.parentElement.remove()" title="삭제">−</button>`;
+  wrap.appendChild(div);
+  div.querySelector('input').focus();
+}
+
+function doSearch(){
+  const names = getNames();
+  const cats = getCats();
+  const epStr = document.getElementById('epInput').value.trim();
+  const ep = epStr ? parseFloat(epStr.replace(/,/g,'')) : null;
+
+  if(!names.length && !cats.length){ alert('업체명 또는 공종을 선택해주세요.'); return; }
+
+  document.getElementById('statusBar').textContent = '검색 중...';
+
+  setTimeout(()=>{
+    let result = [];
+    for(const r of RAW){
+      if(cats.length && !cats.includes(r.sub)) continue;
+      if(names.length){
+        let ci = -1;
+        for(let i=0;i<names.length;i++){ if(r.name && r.name.includes(names[i])){ ci=i; break; } }
+        if(ci === -1) continue;
+        result.push([r, ci]);
+      } else {
+        result.push([r, -1]);
+      }
+    }
+    result.sort((a,b)=>{
+      if(a[1]!==b[1]) return a[1]-b[1];
+      const ca=(catOrder[a[0].cat]??9), cb=(catOrder[b[0].cat]??9);
+      if(ca!==cb) return ca-cb;
+      return (a[0].rank||99999)-(b[0].rank||99999);
+    });
+    filtered = result;
+    renderTable(ep);
+    const q = (names.join(' + ') || '') + (cats.length ? ` | ${cats.join(', ')}` : '');
+    document.getElementById('statusBar').textContent =
+      `"${q}" 검색 결과: ${result.length.toLocaleString()}건` +
+      (ep ? `  |  예정가격: ${ep.toLocaleString()} 백만원` : '');
+  }, 10);
+}
+
+function renderTable(ep){
+  const tbody = document.getElementById('tbody');
+  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="10" class="loader">검색 결과가 없습니다.</td></tr>'; return; }
+  const colors=['tag-c0','tag-c1','tag-c2','tag-c3','tag-c4'];
+  const rows = filtered.map(([r,ci],i)=>{
+    const amt = r.amt != null ? r.amt.toLocaleString('ko-KR') : '-';
+    let exceedHtml = '';
+    if(ep != null && r.amt != null){
+      if(r.amt >= ep) exceedHtml = '<span class="exceed">✓ 초과</span> ';
+      else exceedHtml = '<span class="lack">✗ 미달</span> ';
+    }
+    const nameHtml = `${exceedHtml}<span class="${ci>=0?colors[ci]:''}">${esc(r.name||'')}</span>`;
+    const biznoTd = HAS_BIZNO ? `<td>${esc(r.bizno||'-')}</td>` : '';
+    return `<tr id="row-${i}">
+      <td class="num">${i+1}</td>
+      <td>${esc(r.cat||'')}</td>
+      <td>${esc(r.sub||'')}</td>
+      <td>${nameHtml}</td>
+      <td>${esc(r.rep||'')}</td>
+      <td>${esc(r.addr||'')}</td>
+      ${biznoTd}
+      <td class="amt">${amt}</td>
+      <td class="rank">${r.rank||'-'}</td>
+      <td style="text-align:center"><button onclick="this.closest('tr').remove()" style="background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:12px;cursor:pointer;font-weight:700" title="이 행 제외">✕</button></td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML = rows;
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function sortBy(col){
+  if(sortCol===col) sortRev=!sortRev;
+  else { sortCol=col; sortRev=false; }
+  const keyFn = {
+    no: ([r])=>r.rank||99999,
+    cat: ([r])=>r.cat||'',
+    sub: ([r])=>r.sub||'',
+    name: ([r])=>r.name||'',
+    rep: ([r])=>r.rep||'',
+    addr: ([r])=>r.addr||'',
+    bizno: ([r])=>r.bizno||'',
+    amt: ([r])=>r.amt??-Infinity,
+    rank: ([r])=>r.rank||99999,
+  }[col] || (([r])=>'');
+  filtered.sort((a,b)=>{
+    const av=keyFn(a), bv=keyFn(b);
+    return sortRev ? (av<bv?1:av>bv?-1:0) : (av<bv?-1:av>bv?1:0);
+  });
+  const epStr = document.getElementById('epInput').value.trim();
+  renderTable(epStr ? parseFloat(epStr.replace(/,/g,'')) : null);
+}
+
+function exportCSV(){
+  if(!filtered.length){ alert('내보낼 데이터가 없습니다.'); return; }
+  const header = ['대분류','공종(중분류)','순위','업체명','대표자','소재지','등록번호'];
+  if(HAS_BIZNO) header.push('사업자번호');
+  header.push('평가액(백만원)');
+  const rows = filtered.map(([r])=>{
+    const row = [r.cat||'', r.sub||'', r.rank||'', r.name||'', r.rep||'', r.addr||'', r.reg||''];
+    if(HAS_BIZNO) row.push(r.bizno||'');
+    row.push(r.amt != null ? String(Math.round(r.amt)) : '');
+    return row;
+  });
+  const csv = [header,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='건설업검색결과.csv'; a.click();
+}
+</script>
+</body>
+</html>

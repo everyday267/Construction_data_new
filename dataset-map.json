@@ -4,7 +4,7 @@
   "source": "Korean Ministry of Land, Infrastructure and Transport",
   "year": 2025,
   "unit": {
-    "시공능력평가액": "백만원 (종합건설·전문건설·기계설비), 원 (전기설비·소방설비·정보통신)",
+    "시공능력평가액": "백만원 (종합건설·전문건설·기계설비), 천원 (전기설비·소방설비·정보통신)",
     "건설공사실적": "백만원"
   },
   "index_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/dataset-map.json",
@@ -86,6 +86,7 @@
       "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/specialty_construction.csv",
       "rows": 76118,
       "size_mb": 9.27,
+      "rank_note": "원본 '연번'은 가나다순 일련번호. 정규화 산출물에서는 공종별 시공능력평가액 내림차순으로 순위 재산정",
       "sub_categories": [
         "지반조성·포장",
         "실내건축",
@@ -111,18 +112,21 @@
       "sub_categories": [
         "기계설비·가스공사업"
       ],
+      "rank_note": "원본 '연번'은 가나다순 일련번호. 정규화 산출물에서는 시공능력평가액 내림차순으로 순위 재산정",
       "note": "시공능력평가액 단위: 백만원"
     },
     {
       "major_category_kr": "소방설비",
       "file_name": "fire_protection.csv",
       "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/fire_protection.csv",
-      "rows": 6840,
+      "rows": 6845,
       "size_mb": 0.74,
       "sub_categories": [
-        "소방시설공사업"
+        "소방시설공사업(전문)",
+        "소방시설공사업(일반·전기)",
+        "소방시설공사업(일반·기계)"
       ],
-      "note": "시공능력평가액 단위: 원. 공사실적·항목별평가액 미제공"
+      "note": "시공능력평가액 단위: 천원. 공사실적·항목별평가액 미제공. 전국순위가 업종별로 매겨져 중분류를 업종별로 분리"
     },
     {
       "major_category_kr": "전기설비",
@@ -133,18 +137,18 @@
       "sub_categories": [
         "전기공사업"
       ],
-      "note": "시공능력평가액 단위: 원. 공사실적·항목별평가액 미제공"
+      "note": "시공능력평가액 단위: 천원. 공사실적·항목별평가액 미제공. KECA 크롤링으로 수집"
     },
     {
       "major_category_kr": "정보통신",
       "file_name": "ict_communication.csv",
       "raw_url": "https://raw.githubusercontent.com/everyday267/Construction_data/main/ict_communication.csv",
-      "rows": 11796,
+      "rows": 11836,
       "size_mb": 1.04,
       "sub_categories": [
         "정보통신공사업"
       ],
-      "note": "시공능력평가액 단위: 원. 대표자·소재지·공사실적 미제공"
+      "note": "시공능력평가액 단위: 천원. 대표자·소재지·공사실적 미제공"
     }
   ]
 }
