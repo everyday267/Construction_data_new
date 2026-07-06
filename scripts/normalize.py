@@ -108,7 +108,8 @@ def load_source(src, errors, warnings):
             "rep": (row.get("대표자") or "").strip(),
             "addr": (row.get("소재지") or "").strip(),
             "reg": clean_reg(row.get("등록번호")),
-            "amt": round(amt_raw / src["divisor"], 2) if amt_raw is not None else None,
+            # 백만원 정수로 통일 — 십만원 단위에서 반올림 (PRD §6.2)
+            "amt": round(amt_raw / src["divisor"]) if amt_raw is not None else None,
         }
         if bizno_col:
             b = clean_bizno(row.get(bizno_col))
@@ -166,6 +167,9 @@ def extract_from_html(html_path, cats_needed, warnings):
         raise SystemExit(f"오류: {html_path}에서 내장 RAW 배열을 찾지 못했습니다")
     all_recs = json.loads(m.group(1))
     out = [r for r in all_recs if r.get("cat") in cats_needed]
+    for r in out:
+        if r.get("amt") is not None:
+            r["amt"] = round(r["amt"])  # 백만원 정수 통일 (PRD §6.2)
     warnings.append(f"fallback: {html_path}에서 {sorted(cats_needed)} {len(out):,}건 추출 (raw CSV 업로드 전 임시 조치, PRD §11 O1)")
     return out
 

@@ -272,7 +272,7 @@ function renderTable(ep){
   if(!filtered.length){ tbody.innerHTML='<tr><td colspan="10" class="loader">검색 결과가 없습니다.</td></tr>'; return; }
   const colors=['tag-c0','tag-c1','tag-c2','tag-c3','tag-c4'];
   const rows = filtered.map(([r,ci],i)=>{
-    const amt = r.amt != null ? r.amt.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
+    const amt = r.amt != null ? r.amt.toLocaleString('ko-KR') : '-';
     let exceedHtml = '';
     if(ep != null && r.amt != null){
       if(r.amt >= ep) exceedHtml = '<span class="exceed">✓ 초과</span> ';
@@ -328,7 +328,7 @@ function exportCSV(){
   const rows = filtered.map(([r])=>{
     const row = [r.cat||'', r.sub||'', r.rank||'', r.name||'', r.rep||'', r.addr||'', r.reg||''];
     if(HAS_BIZNO) row.push(r.bizno||'');
-    row.push(r.amt != null ? r.amt.toFixed(2) : '');
+    row.push(r.amt != null ? String(Math.round(r.amt)) : '');
     return row;
   });
   const csv = [header,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
