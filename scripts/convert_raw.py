@@ -3,7 +3,11 @@
 
 사용법:
     pip install openpyxl
-    python scripts/convert_raw.py
+    python scripts/convert_raw.py --year 2026
+
+여러 연도의 원본이 RAW_new/에 함께 있으면 --year로 대상 연도를 지정한다. 파일명에
+연도가 없는 소스(CAK는 '25년도', KICA는 수집 시각)까지 고려해 후보가 여러 개면
+어떤 파일을 골라야 할지 물어보고 중단한다.
 
 원본 → 표준 raw 매핑 (파일 명세: docs/PRD.md §3):
     CAK_*.xlsx (종합건설, 5시트)        → raw/general_construction.csv
@@ -16,6 +20,7 @@
 주의: 종합건설·전문건설·기계설비 원본의 '연번'은 가나다순 일련번호이며 순위가 아닌
 경우가 있다. 순위 확정은 normalize.py의 rank_policy가 담당한다 (PRD §6.4).
 """
+import argparse
 import csv
 import glob
 import re
@@ -28,17 +33,40 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_NEW = ROOT / "RAW_new"
 RAW_OUT = ROOT / "raw"
 
+YEAR = None   # --year로 지정. 후보가 여러 개일 때 연도로 좁히는 데 쓴다.
+
 HEADER = ["대분류", "중분류", "순위", "상호", "대표자", "소재지", "등록번호",
           "시공능력평가액", "공사실적평가액", "경영평가액", "기술능력평가액",
           "신인도평가액", "건설공사실적", "기술자수"]
 
 
-def find_file(pattern):
-    """RAW_new에서 파일 찾기 (macOS NFD 파일명 대응: NFC로 정규화해 비교)."""
-    for p in glob.glob(str(RAW_NEW / "*")):
-        if re.search(pattern, unicodedata.normalize("NFC", Path(p).name)):
-            return Path(p)
-    raise SystemExit(f"오류: RAW_new에서 {pattern!r} 파일을 찾지 못함")
+def find_file(pattern, prefer_latest=False):
+    """RAW_new에서 파일 찾기 (macOS NFD 파일명 대응: NFC로 정규화해 비교).
+
+    후보가 여러 개면 --year(4자리, 2자리 모두)로 좁히고, 그래도 하나로 좁혀지지
+    않으면 잘못된 연도 데이터를 조용히 쓰는 대신 후보를 보여주고 중단한다.
+
+    prefer_latest: 파일명에 수집 시각이 붙는 소스(KICA_rank_YYYYMMDDHHMM)용.
+    이런 파일명의 연도는 공시연도가 아니라 내려받은 날짜라 --year 매칭이 어긋나므로,
+    연도로 좁히는 대신 파일명 역순 첫 번째(=가장 최근 수집분)를 쓴다."""
+    cands = [Path(p) for p in sorted(glob.glob(str(RAW_NEW / "*")))
+             if re.search(pattern, unicodedata.normalize("NFC", Path(p).name))]
+    if not cands:
+        raise SystemExit(f"오류: RAW_new에서 {pattern!r} 파일을 찾지 못함")
+    if prefer_latest:
+        return sorted(cands, key=lambda p: p.name, reverse=True)[0]
+    if len(cands) > 1 and YEAR:
+        yy = str(YEAR)[-2:]
+        narrowed = [p for p in cands
+                    if re.search(rf"(?<!\d){YEAR}(?!\d)|(?<!\d){yy}년", unicodedata.normalize("NFC", p.name))]
+        if narrowed:
+            cands = narrowed
+    if len(cands) > 1:
+        names = "\n    ".join(p.name for p in cands)
+        raise SystemExit(
+            f"오류: {pattern!r} 패턴에 파일이 {len(cands)}개 매칭됩니다. "
+            f"--year로 연도를 지정하거나 대상 연도 파일만 남겨주세요:\n    {names}")
+    return cands[0]
 
 
 def fmt(v):
@@ -140,9 +168,11 @@ def convert_fire():
 
 
 def convert_kica():
-    """정보통신 (한국정보통신공사협회) KICA_rank_*.csv. CP949 인코딩.
-    컬럼: 순위,등록번호,상호,시공능력평가액(천원). 대표자·소재지 미제공."""
-    path = find_file(r"^KICA_rank_.*\.csv$")
+    """정보통신 (한국정보통신공사협회) KICA_rank_YYYYMMDDHHMM.csv. CP949 인코딩.
+    컬럼: 순위,등록번호,상호,시공능력평가액(천원). 대표자·소재지 미제공.
+    파일명 숫자는 공시연도가 아니라 수집 시각이므로 가장 최근 파일을 쓴다."""
+    path = find_file(r"^KICA_rank_.*\.csv$", prefer_latest=True)
+    print(f"    (정보통신 원본: {path.name})")
     rows = []
     with open(path, encoding="cp949", newline="") as f:
         for r in list(csv.reader(f))[1:]:
@@ -154,7 +184,11 @@ def convert_kica():
 
 
 if __name__ == "__main__":
-    print("RAW_new 원본 → raw/ 표준 CSV 변환:")
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--year", help="대상 공시 연도 (예: 2026). 여러 연도 원본이 섞여 있을 때 사용")
+    YEAR = ap.parse_args().year
+
+    print(f"RAW_new 원본 → raw/ 표준 CSV 변환{f' (대상 연도: {YEAR})' if YEAR else ''}:")
     convert_cak()
     convert_specialty()
     convert_mechanical()

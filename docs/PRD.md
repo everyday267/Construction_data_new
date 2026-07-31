@@ -141,18 +141,35 @@
 - 저장 컬럼: `license_id, 등록번호, 등록일, 관할시도회, 상호, 대표자, 소재지, 시공능력평가액_원문, 시공능력평가액, 지역순위, 전국순위`
 
 ### 4.5 규모·운영
-- 2025년 기준 총 21,179건, 페이지당 10건 → 목록 약 2,118회 + 상세 약 21,179회 요청
-- **중간 저장 필수**: `SAVE_INTERVAL` 페이지마다 중간 파일 저장 (`keca_시공능력평가액_중간_0100p.xlsx` 식 명명), 실패 license ID는 별도 파일로 기록해 부분 재수집
-- 재시작 시 `START_PAGE`부터 이어받기. 첫 실행은 `END_PAGE=3` 정도로 소량 테스트 후 전체 실행
-- Colab 등 세션이 끊길 수 있는 환경에서는 중간 저장 주기를 짧게. 결과 메일 발송 자동화 시 Gmail은 앱 비밀번호 기반 SMTP 필요
+- 2025년 기준 총 21,179건, 페이지당 10건 → 목록 약 2,118회 + 상세 약 21,179회 요청. 요청 간 0.4초 대기 기준 **약 2.6시간** 소요
+- **중간 저장**: `SAVE_INTERVAL`(20) 페이지마다 `data/keca/keca_detail.csv` 저장. 실패 license ID는 `keca_failed_ids.txt`로 기록해 `--retry-failed`로 부분 재수집
+- **이어받기**: 재실행하면 기존 `keca_detail.csv`의 license ID를 건너뛰므로 같은 명령을 다시 실행하면 된다
+- 장시간 실행 중 CSRFToken 만료에 대비해 200페이지마다 세션을 갱신한다
+- 주소·순위·평가액에 줄바꿈·문구가 섞이므로 공백 정규화 후 저장. 평가액은 원본 문자열과 숫자 정제값을 둘 다 보존
 
 ### 4.6 재크롤링 체크리스트 (매년 8/2 실행 전)
+
+`python scripts/crawl_keca.py --probe` 가 아래를 자동 점검한다. **전체 수집 전 반드시 실행.**
+
 - [ ] 목록/상세 URL이 여전히 `/service/service07.do`, `/service/service07D.do`인가
 - [ ] hidden 필드명(`menuCd`,`currentPageNo`,`license`,`gubun`,`CSRFToken`)이 그대로인가
 - [ ] `js_linkPage`, `js_detailAction`, `js_searchAction` 로직이 유지되는가
-- [ ] 총 건수·마지막 페이지 번호 변경 확인
+- [ ] 총 건수·마지막 페이지 번호 변경 확인 (2025: 21,179건 / 2,118페이지)
 - [ ] 상세 페이지의 `시공능력평가액`, `지역순위`, `전국순위` 라벨 문자열 변경 여부
-- [ ] 지역 필터 변경 시 `searchSido`/`searchSigungu` 로직 재점검
+- [ ] 지역 필터 변경 시 `searchSido`/`searchSigungu` 로직 재점검 (수동)
+
+### 4.7 실행 순서
+
+```bash
+pip install requests beautifulsoup4
+python scripts/crawl_keca.py --probe        # 1. 구조 점검 (1분)
+python scripts/crawl_keca.py --end-page 3   # 2. 소량 테스트
+python scripts/crawl_keca.py --all          # 3. 전체 수집 (약 2~3시간, 중단 시 재실행하면 이어받음)
+python scripts/crawl_keca.py --retry-failed # 4. (실패분이 있으면) 재수집
+python scripts/crawl_keca.py --to-raw       # 5. → raw/electrical.csv
+```
+
+> ⚠ **실행 환경 제약**: Claude Code 원격 세션의 이그레스 정책이 `*.keca.or.kr`을 포함한 국내 협회 도메인을 차단한다(403). 크롤링은 **사용자 로컬 환경에서 실행**해야 하며, 산출된 `raw/electrical.csv`를 리포지토리에 커밋하면 이후 단계는 원격에서 이어갈 수 있다.
 
 ---
 
@@ -262,8 +279,8 @@
 - GitHub Actions (`.github/workflows/annual-update-reminder.yml`)가 매년 8월 2일 07:00 KST에 갱신 체크리스트가 담긴 이슈를 자동 생성한다. (수동 실행: workflow_dispatch)
 
 ### 9.2 갱신 절차 (runbook)
-1. 5개 협회 사이트에서 신년도 파일 다운로드 → `RAW_new/`에 원본 그대로 보관 (파일 포맷·구조가 §3.1과 달라졌는지 확인)
-2. KECA 크롤링: §4.6 체크리스트 확인 → `scripts/crawl_keca.py` 소량 테스트(3페이지) → 전체 실행 → 결과를 `raw/electrical.csv` 표준 헤더로 변환
+1. 5개 협회 사이트에서 신년도 파일 다운로드 → `RAW_new/`에 원본 그대로 보관 (파일 포맷·구조가 §3.1과 달라졌는지 확인). 파일명에 연도가 들어가므로 이전 연도 파일은 지우거나 별도 보관해 `convert_raw.py`가 신년도 파일을 집도록 한다
+2. KECA 크롤링 (§4.7 실행 순서 — 로컬 환경에서 실행) → `raw/electrical.csv` 생성
 3. `python scripts/convert_raw.py` — 원본 → 표준 raw CSV 변환 (구조 변경 시 스크립트의 해당 소스 함수 수정)
 4. `python scripts/normalize.py` — 품질 검증 통과 확인 (실패 시 원인 해결 전 진행 금지)
 5. `python scripts/build_html.py --year <연도>` — 신규 HTML 생성
