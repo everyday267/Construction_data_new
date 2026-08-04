@@ -6,7 +6,7 @@
 
 ## 산출물
 
-`construction_capability_search_v5.html` — 브라우저로 열면 바로 동작 (서버·설치 불필요, 오프라인 가능)
+`(<연도>) 건설업시공능력평가 조회_v5.html` — 브라우저로 열면 바로 동작 (서버·설치 불필요, 오프라인 가능)
 
 - 업체명 최대 10개 동시 검색 (부분일치), 공종 최대 3개 필터
 - 예정가격 입력 시 초과/미달 판정, 컬럼 정렬, 행 제외, CSV 내보내기
@@ -18,7 +18,7 @@
 협회 원본 5종(RAW_new/, xlsx·csv 혼합) + KECA 크롤링(scripts/crawl_keca.py)
         → scripts/convert_raw.py  (시트·헤더·인코딩 처리 → raw/*.csv 표준 14컬럼)
         → scripts/normalize.py    (단위 통일·순위 재산정·품질 검증 → data/normalized.json)
-        → scripts/build_html.py   (→ construction_capability_search_v5.html)
+        → scripts/build_html.py   (→ "(<연도>) 건설업시공능력평가 조회_v5.html")
 ```
 
 ## 빌드 방법
@@ -27,7 +27,7 @@
 pip install openpyxl
 python scripts/convert_raw.py                # RAW_new/ 원본 → raw/*.csv
 python scripts/normalize.py                  # raw/*.csv → data/normalized.json (+검증)
-python scripts/build_html.py --year 2025     # → construction_capability_search_v5.html
+python scripts/build_html.py --year 2026     # → "(2026) 건설업시공능력평가 조회_v5.html"
 ```
 
 ## 업데이트 주기
@@ -44,5 +44,5 @@ python scripts/build_html.py --year 2025     # → construction_capability_searc
 | `scripts/` | 크롤러·정규화·빌드 스크립트, HTML 템플릿 |
 | `data/` | 파이프라인 중간 산출물 (git 미추적) |
 | `dataset-map.json` | 데이터셋 메타 정보 |
-| `construction_capability_search_v5.html` | 최종 산출물 |
+| `(<연도>) 건설업시공능력평가 조회_v5.html` | 최종 산출물 |
 | `not_in_use/` | 구버전 보관 |

@@ -29,7 +29,7 @@ SOURCES = [
     {"file": "specialty_construction.csv", "cat": "전문건설", "divisor": 1,    "rank_policy": "recompute", "baseline_rows": 76118},
     {"file": "mechanical_gas.csv",         "cat": "기계설비", "divisor": 1,    "rank_policy": "recompute", "baseline_rows": 7694},
     {"file": "fire_protection.csv",        "cat": "소방설비", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 6845},
-    {"file": "electrical.csv",             "cat": "전기설비", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 21179},
+    {"file": "electrical_2026.csv",        "cat": "전기설비", "divisor": 1000000, "rank_policy": "source", "baseline_rows": 21179},
     {"file": "ict_communication.csv",      "cat": "정보통신", "divisor": 1000, "rank_policy": "source",    "baseline_rows": 11836},
 ]
 
